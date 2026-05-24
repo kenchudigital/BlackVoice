@@ -1,0 +1,41 @@
+Makefile
+
+# Cursor local workspace files
+.cursor/
+
+# macOS
+.DS_Store
+
+# Xcode / Swift
+DerivedData/
+.build/
+*.xcworkspace/xcuserdata/
+*.xcodeproj/xcuserdata/
+*.xcuserdatad/
+*.xcuserstate
+
+# Swift Package Manager
+.swiftpm/
+Package.resolved
+
+# Node / TypeScript
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Build outputs
+build/
+dist/
+out/
+
+# Local environment / secrets
+.env
+.env.*
+*.local
+
+# Logs and temp files
+*.log
+*.tmp
+*.swp
