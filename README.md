@@ -31,20 +31,29 @@ This repository is being prepared for a Swift-first macOS structure:
 ```text
 .
 ├── apps/
-│   └── macos/                  # Xcode project (app + widget)
+│   └── macos/
+│       └── BlackVoice/         # Xcode project root (app + widget)
 ├── scripts/                    # Build/release helper scripts
 ├── dist/                       # Build outputs (.app / .dmg)
 ├── res/                        # Static assets
 └── README.md
 ```
 
-Expected app-level layout under `apps/macos`:
+Current Xcode project layout under `apps/macos/BlackVoice`:
 
 ```text
-apps/macos/
+apps/macos/BlackVoice/
 ├── BlackVoice.xcodeproj
 ├── BlackVoice/                 # Main macOS app target
-└── BlackVoiceWidget/           # Widget extension target
+├── BlackVoiceWidget/           # Widget extension target
+├── BlackVoiceTests/
+└── BlackVoiceUITests/
+```
+
+Open the project in Xcode:
+
+```text
+apps/macos/BlackVoice/BlackVoice.xcodeproj
 ```
 
 ## Prerequisites
@@ -64,7 +73,7 @@ In Xcode:
 2. Product Name: `BlackVoice`
 3. Interface: `SwiftUI`
 4. Language: `Swift`
-5. Save under `apps/macos`
+5. Save under `apps/macos` (Xcode creates `apps/macos/BlackVoice/`)
 
 ### 2) Add the widget target
 
@@ -85,7 +94,7 @@ For **both** app and widget targets:
 
 Update code in:
 
-- `apps/macos/BlackVoice/...`
+- `apps/macos/BlackVoice/BlackVoice/...`
 
 Core responsibilities:
 
@@ -97,7 +106,7 @@ Core responsibilities:
 
 Update code in:
 
-- `apps/macos/BlackVoiceWidget/...`
+- `apps/macos/BlackVoice/BlackVoiceWidget/...`
 
 Core responsibilities:
 

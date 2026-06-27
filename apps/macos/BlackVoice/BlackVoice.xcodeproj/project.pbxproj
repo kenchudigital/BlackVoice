@@ -1,0 +1,753 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		A785284D2FF06A3C0020587A /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A785284C2FF06A3B0020587A /* WidgetKit.framework */; };
+		A785284F2FF06A3C0020587A /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A785284E2FF06A3C0020587A /* SwiftUI.framework */; };
+		A785285C2FF06A3E0020587A /* BlackVoiceWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = A785284A2FF06A3B0020587A /* BlackVoiceWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		A785282A2FF067390020587A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A78528142FF067370020587A /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A785281B2FF067370020587A;
+			remoteInfo = BlackVoice;
+		};
+		A78528342FF067390020587A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A78528142FF067370020587A /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A785281B2FF067370020587A;
+			remoteInfo = BlackVoice;
+		};
+		A785285A2FF06A3E0020587A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A78528142FF067370020587A /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A78528492FF06A3B0020587A;
+			remoteInfo = BlackVoiceWidgetExtension;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		A78528612FF06A3E0020587A /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				A785285C2FF06A3E0020587A /* BlackVoiceWidgetExtension.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		A785281C2FF067370020587A /* BlackVoice.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BlackVoice.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A78528292FF067390020587A /* BlackVoiceTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BlackVoiceTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		A78528332FF067390020587A /* BlackVoiceUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BlackVoiceUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		A785284A2FF06A3B0020587A /* BlackVoiceWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = BlackVoiceWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		A785284C2FF06A3B0020587A /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
+		A785284E2FF06A3C0020587A /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
+/* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		A785285D2FF06A3E0020587A /* Exceptions for "BlackVoiceWidget" folder in "BlackVoiceWidgetExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = A78528492FF06A3B0020587A /* BlackVoiceWidgetExtension */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		A785281E2FF067370020587A /* BlackVoice */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = BlackVoice;
+			sourceTree = "<group>";
+		};
+		A785282C2FF067390020587A /* BlackVoiceTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = BlackVoiceTests;
+			sourceTree = "<group>";
+		};
+		A78528362FF067390020587A /* BlackVoiceUITests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = BlackVoiceUITests;
+			sourceTree = "<group>";
+		};
+		A78528502FF06A3C0020587A /* BlackVoiceWidget */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				A785285D2FF06A3E0020587A /* Exceptions for "BlackVoiceWidget" folder in "BlackVoiceWidgetExtension" target */,
+			);
+			path = BlackVoiceWidget;
+			sourceTree = "<group>";
+		};
+/* End PBXFileSystemSynchronizedRootGroup section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		A78528192FF067370020587A /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A78528262FF067390020587A /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A78528302FF067390020587A /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A78528472FF06A3B0020587A /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A785284F2FF06A3C0020587A /* SwiftUI.framework in Frameworks */,
+				A785284D2FF06A3C0020587A /* WidgetKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		A78528132FF067370020587A = {
+			isa = PBXGroup;
+			children = (
+				A785281E2FF067370020587A /* BlackVoice */,
+				A785282C2FF067390020587A /* BlackVoiceTests */,
+				A78528362FF067390020587A /* BlackVoiceUITests */,
+				A78528502FF06A3C0020587A /* BlackVoiceWidget */,
+				A785284B2FF06A3B0020587A /* Frameworks */,
+				A785281D2FF067370020587A /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		A785281D2FF067370020587A /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A785281C2FF067370020587A /* BlackVoice.app */,
+				A78528292FF067390020587A /* BlackVoiceTests.xctest */,
+				A78528332FF067390020587A /* BlackVoiceUITests.xctest */,
+				A785284A2FF06A3B0020587A /* BlackVoiceWidgetExtension.appex */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		A785284B2FF06A3B0020587A /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				A785284C2FF06A3B0020587A /* WidgetKit.framework */,
+				A785284E2FF06A3C0020587A /* SwiftUI.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		A785281B2FF067370020587A /* BlackVoice */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A785283D2FF067390020587A /* Build configuration list for PBXNativeTarget "BlackVoice" */;
+			buildPhases = (
+				A78528182FF067370020587A /* Sources */,
+				A78528192FF067370020587A /* Frameworks */,
+				A785281A2FF067370020587A /* Resources */,
+				A78528612FF06A3E0020587A /* Embed Foundation Extensions */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				A785285B2FF06A3E0020587A /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				A785281E2FF067370020587A /* BlackVoice */,
+			);
+			name = BlackVoice;
+			packageProductDependencies = (
+			);
+			productName = BlackVoice;
+			productReference = A785281C2FF067370020587A /* BlackVoice.app */;
+			productType = "com.apple.product-type.application";
+		};
+		A78528282FF067390020587A /* BlackVoiceTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A78528402FF067390020587A /* Build configuration list for PBXNativeTarget "BlackVoiceTests" */;
+			buildPhases = (
+				A78528252FF067390020587A /* Sources */,
+				A78528262FF067390020587A /* Frameworks */,
+				A78528272FF067390020587A /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				A785282B2FF067390020587A /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				A785282C2FF067390020587A /* BlackVoiceTests */,
+			);
+			name = BlackVoiceTests;
+			packageProductDependencies = (
+			);
+			productName = BlackVoiceTests;
+			productReference = A78528292FF067390020587A /* BlackVoiceTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		A78528322FF067390020587A /* BlackVoiceUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A78528432FF067390020587A /* Build configuration list for PBXNativeTarget "BlackVoiceUITests" */;
+			buildPhases = (
+				A785282F2FF067390020587A /* Sources */,
+				A78528302FF067390020587A /* Frameworks */,
+				A78528312FF067390020587A /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				A78528352FF067390020587A /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				A78528362FF067390020587A /* BlackVoiceUITests */,
+			);
+			name = BlackVoiceUITests;
+			packageProductDependencies = (
+			);
+			productName = BlackVoiceUITests;
+			productReference = A78528332FF067390020587A /* BlackVoiceUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+		A78528492FF06A3B0020587A /* BlackVoiceWidgetExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A785285E2FF06A3E0020587A /* Build configuration list for PBXNativeTarget "BlackVoiceWidgetExtension" */;
+			buildPhases = (
+				A78528462FF06A3B0020587A /* Sources */,
+				A78528472FF06A3B0020587A /* Frameworks */,
+				A78528482FF06A3B0020587A /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				A78528502FF06A3C0020587A /* BlackVoiceWidget */,
+			);
+			name = BlackVoiceWidgetExtension;
+			packageProductDependencies = (
+			);
+			productName = BlackVoiceWidgetExtension;
+			productReference = A785284A2FF06A3B0020587A /* BlackVoiceWidgetExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		A78528142FF067370020587A /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 2660;
+				LastUpgradeCheck = 2660;
+				TargetAttributes = {
+					A785281B2FF067370020587A = {
+						CreatedOnToolsVersion = 26.6;
+					};
+					A78528282FF067390020587A = {
+						CreatedOnToolsVersion = 26.6;
+						TestTargetID = A785281B2FF067370020587A;
+					};
+					A78528322FF067390020587A = {
+						CreatedOnToolsVersion = 26.6;
+						TestTargetID = A785281B2FF067370020587A;
+					};
+					A78528492FF06A3B0020587A = {
+						CreatedOnToolsVersion = 26.6;
+					};
+				};
+			};
+			buildConfigurationList = A78528172FF067370020587A /* Build configuration list for PBXProject "BlackVoice" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = A78528132FF067370020587A;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = A785281D2FF067370020587A /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				A785281B2FF067370020587A /* BlackVoice */,
+				A78528282FF067390020587A /* BlackVoiceTests */,
+				A78528322FF067390020587A /* BlackVoiceUITests */,
+				A78528492FF06A3B0020587A /* BlackVoiceWidgetExtension */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		A785281A2FF067370020587A /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A78528272FF067390020587A /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A78528312FF067390020587A /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A78528482FF06A3B0020587A /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		A78528182FF067370020587A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A78528252FF067390020587A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A785282F2FF067390020587A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A78528462FF06A3B0020587A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		A785282B2FF067390020587A /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A785281B2FF067370020587A /* BlackVoice */;
+			targetProxy = A785282A2FF067390020587A /* PBXContainerItemProxy */;
+		};
+		A78528352FF067390020587A /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A785281B2FF067370020587A /* BlackVoice */;
+			targetProxy = A78528342FF067390020587A /* PBXContainerItemProxy */;
+		};
+		A785285B2FF06A3E0020587A /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A78528492FF06A3B0020587A /* BlackVoiceWidgetExtension */;
+			targetProxy = A785285A2FF06A3E0020587A /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		A785283B2FF067390020587A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 26.5;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		A785283C2FF067390020587A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 26.5;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+			};
+			name = Release;
+		};
+		A785283E2FF067390020587A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_APP_SANDBOX = YES;
+				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SELECTED_FILES = readonly;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = kenchuhk.BlackVoice;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				REGISTER_APP_GROUPS = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		A785283F2FF067390020587A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_APP_SANDBOX = YES;
+				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SELECTED_FILES = readonly;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = kenchuhk.BlackVoice;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				REGISTER_APP_GROUPS = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		A78528412FF067390020587A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 26.5;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = kenchuhk.BlackVoiceTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/BlackVoice.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/BlackVoice";
+			};
+			name = Debug;
+		};
+		A78528422FF067390020587A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 26.5;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = kenchuhk.BlackVoiceTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/BlackVoice.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/BlackVoice";
+			};
+			name = Release;
+		};
+		A78528442FF067390020587A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = kenchuhk.BlackVoiceUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TEST_TARGET_NAME = BlackVoice;
+			};
+			name = Debug;
+		};
+		A78528452FF067390020587A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = kenchuhk.BlackVoiceUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TEST_TARGET_NAME = BlackVoice;
+			};
+			name = Release;
+		};
+		A785285F2FF06A3E0020587A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_APP_SANDBOX = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = BlackVoiceWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = BlackVoiceWidget;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@executable_path/../../../../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 26.5;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = kenchuhk.BlackVoice.BlackVoiceWidget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		A78528602FF06A3E0020587A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_APP_SANDBOX = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = BlackVoiceWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = BlackVoiceWidget;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@executable_path/../../../../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 26.5;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = kenchuhk.BlackVoice.BlackVoiceWidget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		A78528172FF067370020587A /* Build configuration list for PBXProject "BlackVoice" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A785283B2FF067390020587A /* Debug */,
+				A785283C2FF067390020587A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A785283D2FF067390020587A /* Build configuration list for PBXNativeTarget "BlackVoice" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A785283E2FF067390020587A /* Debug */,
+				A785283F2FF067390020587A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A78528402FF067390020587A /* Build configuration list for PBXNativeTarget "BlackVoiceTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A78528412FF067390020587A /* Debug */,
+				A78528422FF067390020587A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A78528432FF067390020587A /* Build configuration list for PBXNativeTarget "BlackVoiceUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A78528442FF067390020587A /* Debug */,
+				A78528452FF067390020587A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A785285E2FF06A3E0020587A /* Build configuration list for PBXNativeTarget "BlackVoiceWidgetExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A785285F2FF06A3E0020587A /* Debug */,
+				A78528602FF06A3E0020587A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = A78528142FF067370020587A /* Project object */;
+}
