@@ -2,23 +2,56 @@
 //  ContentView.swift
 //  BlackVoice
 //
-//  Created by Tsz Kan Chu on 28/6/2026.
-//
 
 import SwiftUI
 
+// MARK: - ContentView（主視窗：Sidebar + 內容區）
+// 做咩：左側 Sidebar 揀頁面，右側顯示對應空頁或之後嘅功能 UI。
+// 目的：對應 PRODUCT.md 整體佈局（Sidebar | Chat Area / 各管理頁）。
+
 struct ContentView: View {
+    @EnvironmentObject private var navigation: AppNavigationState
+
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+        NavigationSplitView {
+            sidebar
+        } detail: {
+            detailView(for: navigation.selectedSection)
         }
-        .padding()
+        .frame(minWidth: 720, minHeight: 480)
+    }
+
+    // 做咩：側邊欄列表，列出六個功能入口。
+    // 目的：使用者點選後更新 selectedSection，右側 detail 跟住變。
+    private var sidebar: some View {
+        List(AppSection.allCases, selection: $navigation.selectedSection) { section in
+            Label(section.title, systemImage: section.systemImage)
+                .tag(section)
+        }
+        .navigationSplitViewColumnWidth(min: 160, ideal: 200, max: 240)
+        .navigationTitle("Black Voice")
+    }
+
+    @ViewBuilder
+    private func detailView(for section: AppSection) -> some View {
+        switch section {
+        case .chat:
+            ChatView()
+        case .agents:
+            AgentsView()
+        case .prompts:
+            PromptTemplatesView()
+        case .profile:
+            ProfileView()
+        case .history:
+            HistoryView()
+        case .settings:
+            SettingsView()
+        }
     }
 }
 
 #Preview {
     ContentView()
+        .environmentObject(AppNavigationState())
 }
