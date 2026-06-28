@@ -31,6 +31,7 @@ struct Provider: AppIntentTimelineProvider {
     // 目的：policy: .never 即係唔自動更新（四個掣唔使每個鐘 refresh）；
     //       之後若要顯示語音狀態 / Agent 名，先至改做定時更新。
     func timeline(for configuration: ConfigurationAppIntent, in context: Context) async -> Timeline<SimpleEntry> {
+        BlackVoiceLog.info(.widget, "Provider.timeline() — widget refreshed")
         let entry = SimpleEntry(date: Date(), configuration: configuration)
         return Timeline(entries: [entry], policy: .never)
     }
@@ -75,6 +76,9 @@ struct BlackVoiceWidgetEntryView: View {
             }
         }
         .padding(8)
+        .onAppear {
+            BlackVoiceLog.info(.widget, "BlackVoiceWidgetEntryView appeared (family: \(String(describing: family)))")
+        }
     }
 
     // 做咩：定義四個掣（Text / Voice / Settings / Close）。

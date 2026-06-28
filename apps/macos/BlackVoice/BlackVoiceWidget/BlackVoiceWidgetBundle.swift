@@ -10,6 +10,10 @@ import SwiftUI
 
 @main
 struct BlackVoiceWidgetBundle: WidgetBundle {
+    init() {
+        BlackVoiceLog.info(.widget, "BlackVoiceWidgetBundle init")
+    }
+
     var body: some Widget {
         BlackVoiceWidget()
     }
