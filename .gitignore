@@ -1,5 +1,7 @@
 Makefile
 
+docs/
+
 # Cursor local workspace files
 .cursor/
 
@@ -7,14 +9,19 @@ Makefile
 .DS_Store
 
 # Xcode / Swift
+# DerivedData/ — Xcode build 快取；做咩：本機 compile 產物；目的：可重建、檔案大、唔使 share
 DerivedData/
+# .build/ — Swift Package Manager 本機 build 輸出
 .build/
+# xcuserdata — 個人 Xcode 設定（scheme 排序、breakpoints）；做咩：每人唔同；目的：共用 scheme 用 xcshareddata/ 就得
 *.xcworkspace/xcuserdata/
 *.xcodeproj/xcuserdata/
 *.xcuserdatad/
+# *.xcuserstate — 上次開邊個檔、游標位置等 UI 狀態
 *.xcuserstate
 
 # Swift Package Manager
+# .swiftpm/ — SPM 本機狀態；Package.resolved — 鎖版本（App 專案通常 commit，SPM lib 先需要）
 .swiftpm/
 Package.resolved
 
