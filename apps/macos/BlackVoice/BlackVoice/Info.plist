@@ -13,5 +13,9 @@
 			</array>
 		</dict>
 	</array>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Black Voice uses the microphone to convert your speech to text in Chat.</string>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>Black Voice uses speech recognition to transcribe your voice messages for the AI assistant.</string>
 </dict>
 </plist>

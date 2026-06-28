@@ -7,6 +7,7 @@ import AppKit
 
 final class AppDelegate: NSObject, NSApplicationDelegate {
     var navigation: AppNavigationState?
+    var chatViewModel: ChatViewModel?
     private var pendingURL: URL?
     private var queuedAction: AppAction?
     private var isDarwinObserverRegistered = false
@@ -17,6 +18,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     private var lastConsumedAction: AppAction?
     private var lastConsumedAt: Date?
+    private var isVoiceActionInFlight = false
 
     func applicationWillFinishLaunching(_ notification: Notification) {
         BlackVoiceLog.info(.app, "applicationWillFinishLaunching")
@@ -60,6 +62,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         BlackVoiceLog.info(.app, "applicationShouldHandleReopen hasVisibleWindows=\(flag)")
         if !flag {
             Task { @MainActor in
+                if chatViewModel?.isListening == true || VoiceRecordingStore.isRecording() {
+                    BlackVoiceLog.info(.app, "Reopen suppressed — voice recording active")
+                    return
+                }
                 if let navigation {
                     navigation.apply(action: .chat)
                 } else {
@@ -72,18 +78,25 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     /// 做咩：MenuBar label onAppear 時提早 bind navigation（唔等 RootView）。
-    func earlyBind(navigation: AppNavigationState) {
+    func earlyBind(navigation: AppNavigationState, chatViewModel: ChatViewModel) {
         if self.navigation == nil {
-            BlackVoiceLog.info(.app, "earlyBind(navigation:)")
+            BlackVoiceLog.info(.app, "earlyBind(navigation:chatViewModel:)")
             self.navigation = navigation
         }
+        self.chatViewModel = chatViewModel
+        consumePendingWidgetAction()
     }
 
-    func bind(navigation: AppNavigationState) {
-        BlackVoiceLog.info(.app, "bind(navigation:) — RootView appeared")
+    func bind(navigation: AppNavigationState, chatViewModel: ChatViewModel) {
+        BlackVoiceLog.info(.app, "bind(navigation:chatViewModel:) — RootView appeared")
         self.navigation = navigation
+        self.chatViewModel = chatViewModel
         if let pendingURL {
-            navigation.handle(url: pendingURL)
+            if let action = AppAction(url: pendingURL), action == .voice {
+                performBackgroundVoiceAction()
+            } else {
+                navigation.handle(url: pendingURL)
+            }
             self.pendingURL = nil
         }
         consumePendingWidgetAction()
@@ -169,12 +182,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             suppressMainWindowOnLaunch = true
             NSApplication.shared.terminate(nil)
         case .voice:
-            suppressMainWindowOnLaunch = true
-            if let navigation {
-                navigation.applyVoiceMode()
-            } else {
-                queuedAction = .voice
+            if chatViewModel?.isListening == true, shouldSkipVoiceStopDebounce() {
+                BlackVoiceLog.info(.app, "consumePendingWidgetAction — voice stop debounced (still recording)")
+                return
             }
+            performBackgroundVoiceAction()
         default:
             suppressMainWindowOnLaunch = false
             guard let navigation else {
@@ -187,10 +199,47 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     @MainActor
+    func performBackgroundVoiceAction() {
+        suppressMainWindowOnLaunch = true
+
+        guard !isVoiceActionInFlight else {
+            BlackVoiceLog.info(.app, "performBackgroundVoiceAction — skipped (already in flight)")
+            return
+        }
+
+        BlackVoiceLog.info(.app, "performBackgroundVoiceAction — hide window + toggle voice (store=\(VoiceRecordingStore.isRecording()))")
+
+        guard let navigation else {
+            queuedAction = .voice
+            return
+        }
+        navigation.applyVoiceBackgroundMode()
+
+        guard let chatViewModel else {
+            queuedAction = .voice
+            return
+        }
+
+        isVoiceActionInFlight = true
+        Task { @MainActor in
+            defer { isVoiceActionInFlight = false }
+            await chatViewModel.toggleVoiceSessionFromWidget()
+            navigation.ensureMainWindowsHidden()
+            BlackVoiceLog.info(.app, "performBackgroundVoiceAction — done (store=\(VoiceRecordingStore.isRecording()), isListening=\(chatViewModel.isListening))")
+        }
+    }
+
+    @MainActor
+    private func shouldSkipVoiceStopDebounce() -> Bool {
+        guard let chatViewModel else { return false }
+        return !chatViewModel.canStopWidgetVoiceYet
+    }
+
+    @MainActor
     private func shouldSkipDuplicate(_ action: AppAction) -> Bool {
         guard action == lastConsumedAction,
               let lastConsumedAt,
-              Date().timeIntervalSince(lastConsumedAt) < 0.35 else { return false }
+              Date().timeIntervalSince(lastConsumedAt) < 0.5 else { return false }
         BlackVoiceLog.debug(.app, "Skipping duplicate: \(action.rawValue)")
         return true
     }
@@ -204,6 +253,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     @MainActor
     private func deliver(_ url: URL, source: String) {
         BlackVoiceLog.info(.deeplink, "Deliver URL from \(source): \(url.absoluteString)")
+        if let action = AppAction(url: url), action == .voice {
+            performBackgroundVoiceAction()
+            pendingURL = nil
+            return
+        }
         if let navigation {
             navigation.handle(url: url)
             pendingURL = nil

@@ -25,6 +25,7 @@ struct OpenVoiceModeIntent: AppIntent {
     static var openAppWhenRun: Bool = true
 
     func perform() async throws -> some IntentResult {
+        BlackVoiceLog.info(.intent, "OpenVoiceModeIntent.perform() — pending voice (store=\(VoiceRecordingStore.isRecording()))")
         AppActionStore.setPending(.voice)
         return .result()
     }

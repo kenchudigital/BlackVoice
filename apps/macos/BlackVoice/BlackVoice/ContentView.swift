@@ -52,6 +52,9 @@ struct ContentView: View {
 }
 
 #Preview {
-    ContentView()
+    let settings = PerplexitySettingsStore()
+    return ContentView()
         .environmentObject(AppNavigationState())
+        .environmentObject(settings)
+        .environmentObject(ChatViewModel(settings: settings))
 }

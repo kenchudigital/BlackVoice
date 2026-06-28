@@ -6,5 +6,9 @@
 	<array>
 		<string>group.kenchuhk.BlackVoice</string>
 	</array>
+	<key>com.apple.security.network.client</key>
+	<true/>
+	<key>com.apple.security.device.audio-input</key>
+	<true/>
 </dict>
 </plist>

@@ -12,6 +12,7 @@ import SwiftUI
 struct BlackVoiceWidgetBundle: WidgetBundle {
     init() {
         BlackVoiceLog.info(.widget, "BlackVoiceWidgetBundle init")
+        _ = WidgetVoiceRecordingObserver.shared
     }
 
     var body: some Widget {

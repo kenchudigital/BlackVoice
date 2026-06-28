@@ -1,5 +1,3 @@
-Makefile
-
 docs/
 
 # Cursor local workspace files
@@ -11,6 +9,7 @@ docs/
 # Xcode / Swift
 # DerivedData/ — Xcode build 快取；做咩：本機 compile 產物；目的：可重建、檔案大、唔使 share
 DerivedData/
+.derivedData/
 # .build/ — Swift Package Manager 本機 build 輸出
 .build/
 # xcuserdata — 個人 Xcode 設定（scheme 排序、breakpoints）；做咩：每人唔同；目的：共用 scheme 用 xcshareddata/ 就得

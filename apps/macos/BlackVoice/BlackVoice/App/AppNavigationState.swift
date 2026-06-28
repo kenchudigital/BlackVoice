@@ -16,6 +16,7 @@ final class AppNavigationState: ObservableObject {
 
     /// 做咩：開主視窗經 AppDelegate.openMainWindow()（handler 只 register 一次）。
     private weak var appDelegate: AppDelegate?
+    private var bringToFrontTask: Task<Void, Never>?
 
     func configureAppDelegate(_ delegate: AppDelegate) {
         appDelegate = delegate
@@ -40,7 +41,7 @@ final class AppNavigationState: ObservableObject {
             selectedSection = .chat
             showMainWindows()
         case .voice:
-            applyVoiceMode()
+            applyVoiceBackgroundMode()
         case .settings:
             selectedSection = .settings
             showMainWindows()
@@ -49,10 +50,14 @@ final class AppNavigationState: ObservableObject {
         }
     }
 
-    /// 做咩：Voice 模式 — 只 hide 視窗，唔 activate、唔 openWindow（避免閃爍）。
-    func applyVoiceMode() {
-        BlackVoiceLog.info(.app, "applyVoiceMode — hide only, no activate")
+    /// 做咩：Widget Voice — 揀 Chat、hide 主視窗（背景錄音，唔 activate）。
+    func applyVoiceBackgroundMode() {
+        BlackVoiceLog.info(.app, "applyVoiceBackgroundMode — chat hidden, background voice")
         selectedSection = .chat
+        hideMainWindows()
+    }
+
+    func ensureMainWindowsHidden() {
         hideMainWindows()
     }
 
@@ -85,6 +90,8 @@ final class AppNavigationState: ObservableObject {
     }
 
     private func hideMainWindows() {
+        bringToFrontTask?.cancel()
+        bringToFrontTask = nil
         let windows = mainAppWindows()
         for window in windows {
             window.orderOut(nil)
@@ -94,9 +101,11 @@ final class AppNavigationState: ObservableObject {
 
     private func bringMainWindowsToFront(retry: Bool) {
         guard retry else { return }
-        Task { @MainActor in
+        bringToFrontTask?.cancel()
+        bringToFrontTask = Task { @MainActor in
             for attempt in 1...8 {
                 try? await Task.sleep(for: .milliseconds(50 * attempt))
+                guard !Task.isCancelled else { return }
                 let windows = mainAppWindows()
                 if !windows.isEmpty {
                     for window in windows {
@@ -105,7 +114,9 @@ final class AppNavigationState: ObservableObject {
                     return
                 }
             }
-            BlackVoiceLog.error(.app, "Main window not found after openWindow retries")
+            if !Task.isCancelled {
+                BlackVoiceLog.error(.app, "Main window not found after openWindow retries")
+            }
         }
     }
 
