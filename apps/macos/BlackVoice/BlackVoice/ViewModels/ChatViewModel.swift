@@ -90,7 +90,7 @@ final class ChatViewModel: ObservableObject {
             return
         }
         guard !settings.chatEnabledModels.isEmpty else {
-            errorMessage = "Enable at least one model in Settings to use voice."
+            errorMessage = "Please go to Settings, enable at least one model under Models, then tap Save."
             publishRecordingState(false)
             return
         }

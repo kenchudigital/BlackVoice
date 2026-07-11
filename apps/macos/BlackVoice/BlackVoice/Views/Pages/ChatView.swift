@@ -9,6 +9,7 @@
 import SwiftUI
 
 struct ChatView: View {
+    @EnvironmentObject private var navigation: AppNavigationState
     @EnvironmentObject private var settings: PerplexitySettingsStore
     @EnvironmentObject private var viewModel: ChatViewModel
 
@@ -16,6 +17,8 @@ struct ChatView: View {
         VStack(spacing: 0) {
             if !settings.hasAPIKey {
                 missingKeyBanner
+            } else if settings.chatEnabledModels.isEmpty {
+                missingModelsBanner
             }
 
             messageList
@@ -49,9 +52,28 @@ struct ChatView: View {
         ContentUnavailableView {
             Label("API Token Required", systemImage: "key")
         } description: {
-            Text("Add your Perplexity API token in Settings to start chatting.")
+            Text("Please go to Settings and add your Perplexity API token to start chatting.")
+        } actions: {
+            Button("Go to Settings") {
+                navigation.selectedSection = .settings
+            }
+            .buttonStyle(.borderedProminent)
         }
-        .frame(maxHeight: 160)
+        .frame(maxHeight: 180)
+    }
+
+    private var missingModelsBanner: some View {
+        ContentUnavailableView {
+            Label("Chat Model Required", systemImage: "cpu")
+        } description: {
+            Text("Please go to Settings, enable at least one model under Models, then tap Save.")
+        } actions: {
+            Button("Go to Settings") {
+                navigation.selectedSection = .settings
+            }
+            .buttonStyle(.borderedProminent)
+        }
+        .frame(maxHeight: 180)
     }
 
     private var listeningBanner: some View {
@@ -149,9 +171,9 @@ struct ChatView: View {
                     .font(.caption)
                     .foregroundStyle(.secondary)
                 if settings.chatEnabledModels.isEmpty {
-                    Text("Enable models in Settings")
+                    Text("No model enabled — go to Settings → Models")
                         .font(.caption)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(.orange)
                 } else {
                     Picker("Model", selection: $settings.chatModelID) {
                         ForEach(settings.chatEnabledModels) { model in
@@ -308,6 +330,7 @@ private struct ChatBubble: View {
 #Preview {
     let settings = PerplexitySettingsStore()
     return ChatView()
+        .environmentObject(AppNavigationState())
         .environmentObject(settings)
         .environmentObject(ChatViewModel(settings: settings))
         .frame(width: 720, height: 520)
