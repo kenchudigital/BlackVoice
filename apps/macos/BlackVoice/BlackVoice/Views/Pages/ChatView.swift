@@ -6,46 +6,381 @@
 //  目的：Mic click 開始/停（max 1 min）；Speak toggle 朗讀 assistant 回覆。
 //  維護：加 streaming → 擴展 toolbar 同 ViewModel。
 
+import AppKit
 import SwiftUI
 
 struct ChatView: View {
     @EnvironmentObject private var navigation: AppNavigationState
     @EnvironmentObject private var settings: PerplexitySettingsStore
     @EnvironmentObject private var viewModel: ChatViewModel
+    @EnvironmentObject private var historyStore: ChatHistoryStore
+    @EnvironmentObject private var promptStore: PromptStore
+    @EnvironmentObject private var profileStore: ProfileStore
+
+    @State private var showHistory = false
+    @State private var selectedHistoryID: UUID?
+    @State private var showClearHistoryConfirm = false
+    @State private var showPromptPreview = false
+
+    private var selectedHistoryEntry: ChatHistoryEntry? {
+        guard let selectedHistoryID else { return nil }
+        return historyStore.entry(id: selectedHistoryID)
+    }
+
+    private var selectedPrompt: PromptTemplate? {
+        guard let id = viewModel.activePromptID else { return nil }
+        return promptStore.prompt(id: id)
+    }
+
+    private var isPromptMode: Bool { viewModel.isPromptMode }
+
+    private var profilesByID: [UUID: UserProfile] {
+        Dictionary(uniqueKeysWithValues: profileStore.profiles.map { ($0.id, $0) })
+    }
+
+    private var renderedPromptText: String {
+        viewModel.renderedPrompt(profilesByID: profilesByID)
+    }
+
+    private var canSendNow: Bool {
+        if isPromptMode {
+            return viewModel.canSendPrompt(profilesByID: profilesByID)
+        }
+        return viewModel.canSend
+    }
 
     var body: some View {
-        VStack(spacing: 0) {
-            if !settings.hasAPIKey {
-                missingKeyBanner
-            } else if settings.chatEnabledModels.isEmpty {
-                missingModelsBanner
+        HStack(spacing: 0) {
+            if showHistory {
+                historySidebar
+                    .frame(width: 260)
+                Divider()
             }
 
-            messageList
+            VStack(spacing: 0) {
+                if !settings.hasAPIKey {
+                    missingKeyBanner
+                } else if settings.chatEnabledModels.isEmpty {
+                    missingModelsBanner
+                }
 
-            if viewModel.isListening {
-                listeningBanner
+                if let entry = selectedHistoryEntry {
+                    historyDetail(entry)
+                } else {
+                    messageList
+                }
+
+                if viewModel.isListening {
+                    listeningBanner
+                }
+
+                if viewModel.speechSynthesis.isSpeaking {
+                    speakingBanner
+                }
+
+                if let errorMessage = viewModel.errorMessage {
+                    errorBanner(errorMessage)
+                }
+
+                if selectedHistoryEntry == nil {
+                    if isPromptMode {
+                        promptVariablesBar
+                    }
+                    composer
+                }
             }
-
-            if viewModel.speechSynthesis.isSpeaking {
-                speakingBanner
-            }
-
-            if let errorMessage = viewModel.errorMessage {
-                errorBanner(errorMessage)
-            }
-
-            composer
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
         .navigationTitle("Chat")
+        .task {
+            settings.ensureValidChatModel()
+            viewModel.profilesForPromptRender = profilesByID
+        }
+        .onChange(of: profileStore.profiles) { _, _ in
+            Task { @MainActor in
+                viewModel.profilesForPromptRender = profilesByID
+            }
+        }
         .toolbar {
-            ToolbarItem(placement: .primaryAction) {
+            ToolbarItemGroup(placement: .primaryAction) {
+                if isPromptMode {
+                    Button {
+                        viewModel.clearPrompt()
+                    } label: {
+                        Label("Exit prompt mode", systemImage: "xmark.circle")
+                    }
+                    .help("Exit prompt mode — use free chat")
+                }
+
+                promptMenu
+            }
+
+            ToolbarItemGroup(placement: .primaryAction) {
+                Button {
+                    showHistory.toggle()
+                    if !showHistory {
+                        selectedHistoryID = nil
+                    }
+                } label: {
+                    Label("History", systemImage: showHistory ? "clock.fill" : "clock")
+                }
+                .help(showHistory ? "Hide chat history" : "Show chat history")
+
                 Button("Clear") {
                     viewModel.clearConversation()
+                    selectedHistoryID = nil
                 }
                 .disabled(viewModel.messages.isEmpty || viewModel.isLoading || viewModel.isListening)
             }
         }
+        .alert("Clear All History?", isPresented: $showClearHistoryConfirm) {
+            Button("Cancel", role: .cancel) {}
+            Button("Clear All", role: .destructive) {
+                historyStore.clearAll()
+                selectedHistoryID = nil
+            }
+        } message: {
+            Text("This permanently deletes all saved chat history. The current conversation is not affected.")
+        }
+        .sheet(isPresented: $showPromptPreview) {
+            promptPreviewSheet
+        }
+    }
+
+    private var promptMenu: some View {
+        Menu {
+            if promptStore.prompts.isEmpty {
+                Text("No prompts — create one in Prompts")
+            } else {
+                ForEach(promptStore.prompts) { prompt in
+                    Button {
+                        viewModel.profilesForPromptRender = profilesByID
+                        viewModel.activatePrompt(prompt)
+                    } label: {
+                        if viewModel.activePromptID == prompt.id {
+                            Label(prompt.name, systemImage: "checkmark")
+                        } else {
+                            Text(prompt.name)
+                        }
+                    }
+                }
+            }
+        } label: {
+            Label(
+                selectedPrompt?.name ?? "Prompt",
+                systemImage: isPromptMode ? "doc.text.fill" : "doc.text"
+            )
+        }
+        .help(isPromptMode ? "Using prompt — fill variables below" : "Select a prompt template")
+    }
+
+    private var promptVariablesBar: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack {
+                Text("Variables")
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(.secondary)
+                if let selectedPrompt {
+                    Text(selectedPrompt.name)
+                        .font(.caption)
+                        .foregroundStyle(.tertiary)
+                        .lineLimit(1)
+                }
+                Spacer()
+                Button("Preview") {
+                    showPromptPreview = true
+                }
+                .controlSize(.small)
+                .buttonStyle(.bordered)
+            }
+
+            if viewModel.promptTextKeys.isEmpty {
+                Text("No text variables — Send uses the prompt as saved (PROFILE bindings applied).")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            } else {
+                ForEach(viewModel.promptTextKeys, id: \.self) { key in
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("{{\(key)}}")
+                            .font(.caption2.monospaced())
+                            .foregroundStyle(.secondary)
+                        TextField(key, text: promptVariableBinding(for: key), axis: .vertical)
+                            .textFieldStyle(.roundedBorder)
+                            .lineLimit(3...10)
+                            .environment(\.layoutDirection, .leftToRight)
+                            .disabled(viewModel.isLoading || viewModel.isListening)
+                            .onSubmit {
+                                Task { await sendFromComposer() }
+                            }
+                            .help("Return to send · Option-Return for newline")
+                    }
+                }
+            }
+
+            if !viewModel.promptModelIsAvailable {
+                Text("Prompt model “\(viewModel.activePromptModelIDValue)” is not enabled in Settings.")
+                    .font(.caption)
+                    .foregroundStyle(.orange)
+            }
+        }
+        .padding(.horizontal)
+        .padding(.vertical, 10)
+        .background(Color.secondary.opacity(0.08))
+    }
+
+    private var promptPreviewSheet: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Text("Preview")
+                    .font(.title2.weight(.semibold))
+                Spacer()
+                if isPromptMode {
+                    Text("Model: \(viewModel.activePromptModelIDValue)")
+                        .font(.caption.monospaced())
+                        .foregroundStyle(.secondary)
+                }
+                Button("Done") {
+                    showPromptPreview = false
+                }
+                .keyboardShortcut(.cancelAction)
+            }
+
+            ScrollView {
+                Text(renderedPromptText)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .textSelection(.enabled)
+                    .environment(\.layoutDirection, .leftToRight)
+                    .padding(4)
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+        }
+        .padding()
+        .frame(minWidth: 520, minHeight: 420)
+    }
+
+    private var historySidebar: some View {
+        VStack(spacing: 0) {
+            HStack {
+                Text("History")
+                    .font(.headline)
+                Spacer()
+                Button("Clear All", role: .destructive) {
+                    showClearHistoryConfirm = true
+                }
+                .disabled(historyStore.entries.isEmpty)
+                .controlSize(.small)
+            }
+            .padding(.horizontal, 12)
+            .padding(.vertical, 10)
+
+            Divider()
+
+            if historyStore.entries.isEmpty {
+                ContentUnavailableView {
+                    Label("No History", systemImage: "clock")
+                } description: {
+                    Text("Successful chats are saved here automatically.")
+                }
+            } else {
+                List(selection: $selectedHistoryID) {
+                    ForEach(historyStore.entries) { entry in
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text(entry.createdAt.formatted(date: .abbreviated, time: .shortened))
+                                .font(.caption2)
+                                .foregroundStyle(.secondary)
+                            Text(entry.question)
+                                .font(.body)
+                                .lineLimit(2)
+                                .environment(\.layoutDirection, .leftToRight)
+                            Text(entry.usageSummary)
+                                .font(.caption2)
+                                .foregroundStyle(.tertiary)
+                        }
+                        .tag(entry.id)
+                        .contextMenu {
+                            Button("Delete", role: .destructive) {
+                                historyStore.remove(id: entry.id)
+                                if selectedHistoryID == entry.id {
+                                    selectedHistoryID = nil
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private func historyDetail(_ entry: ChatHistoryEntry) -> some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 16) {
+                HStack {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(entry.createdAt.formatted(date: .complete, time: .standard))
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                        Text(entry.modelID)
+                            .font(.caption.monospaced())
+                            .foregroundStyle(.secondary)
+                    }
+                    Spacer()
+                    Button("Back to Chat") {
+                        selectedHistoryID = nil
+                    }
+                }
+
+                Group {
+                    Text("Question")
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.secondary)
+                    Text(entry.question)
+                        .textSelection(.enabled)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .environment(\.layoutDirection, .leftToRight)
+                }
+
+                Divider()
+
+                Group {
+                    Text("Response")
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.secondary)
+                    Text(entry.response)
+                        .textSelection(.enabled)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .environment(\.layoutDirection, .leftToRight)
+                }
+
+                Divider()
+
+                Group {
+                    Text("Token Usage")
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.secondary)
+                    LabeledContent("Input", value: tokenText(entry.inputTokens))
+                    LabeledContent("Output", value: tokenText(entry.outputTokens))
+                    LabeledContent("Total", value: tokenText(entry.totalTokens))
+                }
+            }
+            .padding()
+        }
+    }
+
+    private func tokenText(_ value: Int?) -> String {
+        guard let value else { return "—" }
+        return "\(value)"
+    }
+
+    private var chatModelSelection: Binding<String> {
+        Binding(
+            get: { settings.chatModelID },
+            set: { newValue in
+                guard newValue != settings.chatModelID else { return }
+                Task { @MainActor in
+                    settings.chatModelID = newValue
+                }
+            }
+        )
     }
 
     private var missingKeyBanner: some View {
@@ -55,7 +390,9 @@ struct ChatView: View {
             Text("Please go to Settings and add your Perplexity API token to start chatting.")
         } actions: {
             Button("Go to Settings") {
-                navigation.selectedSection = .settings
+                Task { @MainActor in
+                    navigation.selectedSection = .settings
+                }
             }
             .buttonStyle(.borderedProminent)
         }
@@ -69,7 +406,9 @@ struct ChatView: View {
             Text("Please go to Settings, enable at least one model under Models, then tap Save.")
         } actions: {
             Button("Go to Settings") {
-                navigation.selectedSection = .settings
+                Task { @MainActor in
+                    navigation.selectedSection = .settings
+                }
             }
             .buttonStyle(.borderedProminent)
         }
@@ -170,18 +509,29 @@ struct ChatView: View {
                 Text("Model")
                     .font(.caption)
                     .foregroundStyle(.secondary)
-                if settings.chatEnabledModels.isEmpty {
+                if isPromptMode {
+                    Text(viewModel.activePromptModelIDValue)
+                        .font(.caption.monospaced())
+                        .foregroundStyle(viewModel.promptModelIsAvailable ? Color.secondary : Color.orange)
+                } else if settings.chatEnabledModels.isEmpty {
                     Text("No model enabled — go to Settings → Models")
                         .font(.caption)
                         .foregroundStyle(.orange)
-                } else {
-                    Picker("Model", selection: $settings.chatModelID) {
+                } else if settings.chatEnabledModels.contains(where: { $0.id == settings.chatModelID }) {
+                    Picker("Model", selection: chatModelSelection) {
                         ForEach(settings.chatEnabledModels) { model in
                             Text("\(model.displayName) · \(model.id)").tag(model.id)
                         }
                     }
                     .labelsHidden()
                     .frame(maxWidth: 320)
+                } else {
+                    Text("Preparing model…")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .task {
+                            settings.ensureValidChatModel()
+                        }
                 }
 
                 Spacer()
@@ -203,36 +553,69 @@ struct ChatView: View {
             }
 
             HStack(alignment: .bottom, spacing: 10) {
-                TextField("Message…", text: $viewModel.inputText, axis: .vertical)
-                    .textFieldStyle(.roundedBorder)
-                    .lineLimit(1...6)
-                    .disabled(!settings.hasAPIKey || viewModel.isLoading || viewModel.isListening || settings.chatEnabledModels.isEmpty)
-                    .onSubmit {
-                        Task { await viewModel.send() }
-                    }
+                if !isPromptMode {
+                    TextField("Message…", text: $viewModel.inputText, axis: .vertical)
+                        .textFieldStyle(.roundedBorder)
+                        .lineLimit(3...10)
+                        .disabled(!settings.hasAPIKey || viewModel.isLoading || viewModel.isListening || settings.chatEnabledModels.isEmpty)
+                        .onSubmit {
+                            Task { await sendFromComposer() }
+                        }
+                        .help("Return to send · Option-Return for newline")
+                } else {
+                    Spacer(minLength: 0)
+                }
 
                 Button {
-                    Task { await viewModel.toggleMic() }
+                    Task {
+                        viewModel.profilesForPromptRender = profilesByID
+                        await viewModel.toggleMic()
+                    }
                 } label: {
                     Image(systemName: viewModel.isListening ? "stop.fill" : "mic")
                 }
                 .buttonStyle(.borderedProminent)
                 .tint(viewModel.isListening ? .red : nil)
                 .disabled(!viewModel.canUseMic && !viewModel.isListening)
-                .help(viewModel.isListening ? "Stop recording and send" : "Start voice input (max 1 min)")
+                .help(
+                    isPromptMode
+                        ? (viewModel.isListening ? "Stop and send rendered prompt" : "Voice fills first variable, then sends prompt")
+                        : (viewModel.isListening ? "Stop recording and send" : "Start voice input (max 1 min)")
+                )
 
                 Button {
-                    Task { await viewModel.send() }
+                    Task { await sendFromComposer() }
                 } label: {
                     Image(systemName: "paperplane.fill")
                 }
                 .buttonStyle(.borderedProminent)
-                .disabled(!viewModel.canSend)
+                .disabled(!canSendNow)
                 .keyboardShortcut(.return, modifiers: [.command])
+                .help("Send (⌘↩)")
             }
         }
         .padding()
         .background(.bar)
+    }
+
+    private func promptVariableBinding(for key: String) -> Binding<String> {
+        Binding(
+            get: { viewModel.promptVariableValues[key] ?? "" },
+            set: { newValue in
+                Task { @MainActor in
+                    viewModel.setPromptVariable(key, value: newValue)
+                }
+            }
+        )
+    }
+
+    private func sendFromComposer() async {
+        viewModel.profilesForPromptRender = profilesByID
+        if isPromptMode {
+            await viewModel.sendPrompt(profilesByID: profilesByID)
+        } else {
+            await viewModel.send()
+        }
     }
 
     private func formatSeconds(_ seconds: Int) -> String {
@@ -299,21 +682,37 @@ private struct RecordingIndicator: View {
             .scaleEffect(isPulsing ? 1.25 : 0.85)
             .opacity(isPulsing ? 1 : 0.55)
             .animation(.easeInOut(duration: 0.8).repeatForever(autoreverses: true), value: isPulsing)
-            .onAppear { isPulsing = true }
+            .onAppear {
+                Task { @MainActor in
+                    isPulsing = true
+                }
+            }
     }
 }
 
 private struct ChatBubble: View {
     let message: ChatMessage
+    @State private var didCopy = false
 
     var body: some View {
         HStack {
             if message.role == .user { Spacer(minLength: 48) }
 
             VStack(alignment: message.role == .user ? .trailing : .leading, spacing: 4) {
-                Text(message.role == .user ? "You" : "Assistant")
-                    .font(.caption2)
-                    .foregroundStyle(.secondary)
+                HStack(spacing: 6) {
+                    Text(message.role == .user ? "You" : "Assistant")
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+
+                    Button {
+                        copyMessage()
+                    } label: {
+                        Image(systemName: didCopy ? "checkmark" : "doc.on.doc")
+                            .font(.caption2)
+                    }
+                    .buttonStyle(.borderless)
+                    .help(didCopy ? "Copied" : "Copy message")
+                }
 
                 Text(message.content)
                     .textSelection(.enabled)
@@ -325,13 +724,27 @@ private struct ChatBubble: View {
             if message.role == .assistant { Spacer(minLength: 48) }
         }
     }
+
+    private func copyMessage() {
+        NSPasteboard.general.clearContents()
+        NSPasteboard.general.setString(message.content, forType: .string)
+        didCopy = true
+        Task { @MainActor in
+            try? await Task.sleep(for: .seconds(1.2))
+            didCopy = false
+        }
+    }
 }
 
 #Preview {
     let settings = PerplexitySettingsStore()
+    let history = ChatHistoryStore()
     return ChatView()
         .environmentObject(AppNavigationState())
         .environmentObject(settings)
-        .environmentObject(ChatViewModel(settings: settings))
+        .environmentObject(ChatViewModel(settings: settings, historyStore: history))
+        .environmentObject(history)
+        .environmentObject(PromptStore())
+        .environmentObject(ProfileStore())
         .frame(width: 720, height: 520)
 }

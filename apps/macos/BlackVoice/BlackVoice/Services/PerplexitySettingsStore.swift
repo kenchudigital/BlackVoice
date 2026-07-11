@@ -174,11 +174,13 @@ final class PerplexitySettingsStore: ObservableObject {
         }
     }
 
-    private func ensureValidChatModel() {
+    func ensureValidChatModel() {
         let enabled = chatEnabledModels
         if enabled.contains(where: { $0.id == chatModelID }) { return }
-        if let first = enabled.first {
+        if let first = enabled.first, chatModelID != first.id {
             chatModelID = first.id
+        } else if enabled.isEmpty, !chatModelID.isEmpty {
+            chatModelID = ""
         }
     }
 

@@ -36,7 +36,7 @@ enum PerplexityClient {
         apiKey: String,
         model: PerplexityModelInfo,
         messages: [ChatMessage]
-    ) async throws -> String {
+    ) async throws -> AgentChatResult {
         try await agentChat(
             apiKey: apiKey,
             model: model.id,
@@ -48,7 +48,7 @@ enum PerplexityClient {
         apiKey: String,
         model: String,
         messages: [ChatMessage]
-    ) async throws -> String {
+    ) async throws -> AgentChatResult {
         let trimmedKey = apiKey.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmedKey.isEmpty else { throw PerplexityClientError.missingAPIKey }
         guard !messages.isEmpty else { throw PerplexityClientError.emptyMessages }
@@ -84,7 +84,19 @@ enum PerplexityClient {
               !content.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
             throw PerplexityClientError.emptyReply
         }
-        return content
+
+        let usage: TokenUsage?
+        if let apiUsage = decoded.usage {
+            usage = TokenUsage(
+                inputTokens: apiUsage.input_tokens,
+                outputTokens: apiUsage.output_tokens,
+                totalTokens: apiUsage.total_tokens
+            )
+        } else {
+            usage = nil
+        }
+
+        return AgentChatResult(text: content, usage: usage, modelID: model)
     }
 
     private static func performRequest(_ request: URLRequest) async throws -> Data {
@@ -183,9 +195,16 @@ private struct AgentChatResponse: Decodable {
         let content: [ContentPart]?
     }
 
+    struct Usage: Decodable {
+        let input_tokens: Int
+        let output_tokens: Int
+        let total_tokens: Int
+    }
+
     let status: String
     let error: ErrorInfo?
     let output: [OutputItem]?
+    let usage: Usage?
 
     var assistantText: String? {
         let parts = output?
@@ -195,4 +214,10 @@ private struct AgentChatResponse: Decodable {
         let joined = parts?.joined(separator: "\n")
         return joined?.isEmpty == false ? joined : nil
     }
+}
+
+struct AgentChatResult: Sendable {
+    let text: String
+    let usage: TokenUsage?
+    let modelID: String
 }

@@ -28,7 +28,10 @@ struct LTRTextField: NSViewRepresentable {
     }
 
     func updateNSView(_ nsView: NSTextField, context: Context) {
+        context.coordinator.text = $text
         configure(nsView)
+        // Avoid rewriting while editing — prevents binding feedback during view updates.
+        guard nsView.currentEditor() == nil else { return }
         if nsView.stringValue != text {
             nsView.stringValue = text
         }
@@ -49,16 +52,16 @@ struct LTRTextField: NSViewRepresentable {
     }
 
     final class Coordinator: NSObject, NSTextFieldDelegate {
-        @Binding var text: String
+        var text: Binding<String>
         weak var field: NSTextField?
 
         init(text: Binding<String>) {
-            _text = text
+            self.text = text
         }
 
         func controlTextDidChange(_ obj: Notification) {
             guard let field = obj.object as? NSTextField else { return }
-            text = field.stringValue
+            text.wrappedValue = field.stringValue
         }
     }
 }

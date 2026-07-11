@@ -12,7 +12,7 @@
 
 Black Voice is a macOS menu-bar app with a WidgetKit extension for voice and text chat with an LLM.
 
-- **App:** Settings (API key, model), chat UI, speech-to-text and text-to-speech.
+- **App:** Settings (API key, model), chat UI, speech-to-text and text-to-speech, profiles, prompt templates, auto-saved chat history.
 - **Widget:** Quick voice toggle; runs chat in the background when the window is hidden.
 - **Distribution:** Build a `.app` and package `dist/BlackVoice.dmg` for local sharing.
 
@@ -22,7 +22,7 @@ Black Voice is a macOS menu-bar app with a WidgetKit extension for voice and tex
 - **Widget:** WidgetKit + App Intents
 - **LLM API:** Perplexity (`POST /v1/agent`)
 - **Speech:** Apple Speech + AVSpeechSynthesizer
-- **Storage:** Keychain (API token), App Group shared state
+- **Storage:** Keychain (API token), Application Support (profiles, prompts, chat history), App Group shared state
 
 ## Repository Layout
 
@@ -31,6 +31,7 @@ Black Voice is a macOS menu-bar app with a WidgetKit extension for voice and tex
 ├── apps/macos/BlackVoice/      # Xcode project (app + widget)
 ├── dist/                       # Build outputs (.dmg) — gitignored
 ├── res/                        # Static assets
+├── README-Setting.md           # App limits, storage paths, validation rules (source of truth)
 ├── Makefile                    # build + dmg packaging
 └── README.md
 ```

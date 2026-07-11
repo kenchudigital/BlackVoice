@@ -26,10 +26,20 @@ final class ChatViewModel: ObservableObject {
     @Published private(set) var listeningSecondsRemaining = SpeechRecognitionService.maxDurationSeconds
     @Published private(set) var liveTranscript = ""
 
+    /// Active Chat prompt template (nil = normal free-text chat).
+    @Published private(set) var activePromptID: UUID?
+    @Published var promptVariableValues: [String: String] = [:]
+
+    private var activePromptContent: String = ""
+    private var activePromptModelID: String = ""
+    private var activePromptProfileBindings: [String: UUID] = [:]
+    private var activePromptTextKeys: [String] = []
+
     let speechRecognition = SpeechRecognitionService()
     let speechSynthesis = SpeechSynthesisService()
 
     private let settings: PerplexitySettingsStore
+    private let historyStore: ChatHistoryStore
     private var cancellables = Set<AnyCancellable>()
     private var recordingStartedAt: Date?
 
@@ -41,8 +51,13 @@ final class ChatViewModel: ObservableObject {
         return Date().timeIntervalSince(recordingStartedAt) >= Self.widgetVoiceStopDebounceSeconds
     }
 
-    init(settings: PerplexitySettingsStore) {
+    var isPromptMode: Bool { activePromptID != nil }
+
+    var promptTextKeys: [String] { activePromptTextKeys }
+
+    init(settings: PerplexitySettingsStore, historyStore: ChatHistoryStore) {
         self.settings = settings
+        self.historyStore = historyStore
         isSpeakRepliesEnabled = UserDefaults.standard.bool(forKey: Self.speakRepliesKey)
 
         speechRecognition.onAutoStop = { [weak self] transcript in
@@ -62,10 +77,72 @@ final class ChatViewModel: ObservableObject {
             && !settings.chatEnabledModels.isEmpty
     }
 
+    func canSendPrompt(profilesByID: [UUID: UserProfile]) -> Bool {
+        guard isPromptMode, !isLoading, !isListening, settings.hasAPIKey else { return false }
+        guard settings.chatEnabledModels.contains(where: { $0.id == activePromptModelID }) else { return false }
+        let rendered = renderedPrompt(profilesByID: profilesByID)
+        return !rendered.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+    }
+
     var canUseMic: Bool {
         settings.hasAPIKey
             && !settings.chatEnabledModels.isEmpty
             && !isLoading
+    }
+
+    var promptModelIsAvailable: Bool {
+        guard isPromptMode else { return true }
+        return settings.chatEnabledModels.contains(where: { $0.id == activePromptModelID })
+    }
+
+    var activePromptModelIDValue: String { activePromptModelID }
+
+    func activatePrompt(_ prompt: PromptTemplate) {
+        activePromptID = prompt.id
+        activePromptContent = prompt.content
+        activePromptModelID = prompt.modelID
+        activePromptProfileBindings = prompt.profileBindings
+        activePromptTextKeys = PromptVariableEngine.parseSlots(in: prompt.content).textVariableKeys
+        promptVariableValues = Dictionary(uniqueKeysWithValues: activePromptTextKeys.map { ($0, "") })
+        inputText = ""
+        BlackVoiceLog.info(.app, "Chat prompt activated — id: \(prompt.id), name: \(prompt.name)")
+    }
+
+    func clearPrompt() {
+        activePromptID = nil
+        activePromptContent = ""
+        activePromptModelID = ""
+        activePromptProfileBindings = [:]
+        activePromptTextKeys = []
+        promptVariableValues = [:]
+        BlackVoiceLog.info(.app, "Chat prompt cleared")
+    }
+
+    func renderedPrompt(profilesByID: [UUID: UserProfile]) -> String {
+        guard isPromptMode else { return "" }
+        return PromptVariableEngine.renderPreview(
+            content: activePromptContent,
+            variableExamples: promptVariableValues,
+            profileBindings: activePromptProfileBindings,
+            profilesByID: profilesByID
+        )
+    }
+
+    func setPromptVariable(_ key: String, value: String) {
+        promptVariableValues[key] = PromptLimits.truncateToMaxBytes(
+            value,
+            maxBytes: PromptLimits.exampleValueMaxBytes
+        )
+    }
+
+    func sendPrompt(profilesByID: [UUID: UserProfile]) async {
+        guard isPromptMode else { return }
+        guard settings.chatEnabledModels.contains(where: { $0.id == activePromptModelID }) else {
+            errorMessage = "Prompt model “\(activePromptModelID)” is not enabled in Settings."
+            return
+        }
+        let text = renderedPrompt(profilesByID: profilesByID)
+        await send(text: text, modelID: activePromptModelID)
     }
 
     func toggleVoiceSessionFromWidget() async {
@@ -126,10 +203,10 @@ final class ChatViewModel: ObservableObject {
         let trimmed = inputText.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else { return }
         inputText = ""
-        await send(text: trimmed)
+        await send(text: trimmed, modelID: nil)
     }
 
-    func send(text: String) async {
+    func send(text: String, modelID: String? = nil) async {
         let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty, !isLoading, !isListening else { return }
 
@@ -139,18 +216,31 @@ final class ChatViewModel: ObservableObject {
         defer { isLoading = false }
 
         do {
-            guard let model = settings.modelInfo(for: settings.chatModelID) else {
+            let resolvedModelID: String
+            if let modelID,
+               !modelID.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                resolvedModelID = modelID.trimmingCharacters(in: .whitespacesAndNewlines)
+            } else {
+                resolvedModelID = settings.chatModelID
+            }
+            guard let model = settings.modelInfo(for: resolvedModelID) else {
                 errorMessage = "Selected model is not available. Refresh models in Settings."
                 return
             }
-            let reply = try await PerplexityClient.chat(
+            let result = try await PerplexityClient.chat(
                 apiKey: settings.savedAPIKey,
                 model: model,
                 messages: messages
             )
-            messages.append(ChatMessage(role: .assistant, content: reply))
+            messages.append(ChatMessage(role: .assistant, content: result.text))
+            historyStore.append(
+                question: trimmed,
+                response: result.text,
+                modelID: result.modelID,
+                usage: result.usage
+            )
             if isSpeakRepliesEnabled {
-                await speechSynthesis.speak(reply)
+                await speechSynthesis.speak(result.text)
             }
         } catch {
             errorMessage = error.localizedDescription
@@ -204,7 +294,23 @@ final class ChatViewModel: ObservableObject {
         }
 
         inputText = ""
-        await send(text: transcript)
+        if isPromptMode {
+            if let firstKey = activePromptTextKeys.first {
+                setPromptVariable(firstKey, value: transcript)
+            }
+            // profilesByID must be supplied by caller for PROFILE expansion — use empty and
+            // re-send from view if needed. Store last profiles via pending flag.
+            await sendPromptPendingMicTranscript()
+        } else {
+            await send(text: transcript, modelID: nil)
+        }
+    }
+
+    /// Filled by ChatView before mic stop completes PROFILE render.
+    var profilesForPromptRender: [UUID: UserProfile] = [:]
+
+    private func sendPromptPendingMicTranscript() async {
+        await sendPrompt(profilesByID: profilesForPromptRender)
     }
 
     private func syncListeningState() {

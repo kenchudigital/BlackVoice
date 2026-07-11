@@ -24,7 +24,7 @@ struct ContentView: View {
     // 做咩：側邊欄列表，列出六個功能入口。
     // 目的：使用者點選後更新 selectedSection，右側 detail 跟住變。
     private var sidebar: some View {
-        List(AppSection.allCases, selection: $navigation.selectedSection) { section in
+        List(AppSection.allCases, selection: sectionSelection) { section in
             Label(section.title, systemImage: section.systemImage)
                 .tag(section)
         }
@@ -32,19 +32,27 @@ struct ContentView: View {
         .navigationTitle("Black Voice")
     }
 
+    private var sectionSelection: Binding<AppSection?> {
+        Binding(
+            get: { navigation.selectedSection },
+            set: { newValue in
+                guard let newValue, newValue != navigation.selectedSection else { return }
+                Task { @MainActor in
+                    navigation.selectedSection = newValue
+                }
+            }
+        )
+    }
+
     @ViewBuilder
     private func detailView(for section: AppSection) -> some View {
         switch section {
         case .chat:
             ChatView()
-        case .agents:
-            AgentsView()
         case .prompts:
             PromptTemplatesView()
         case .profile:
             ProfileView()
-        case .history:
-            HistoryView()
         case .settings:
             SettingsView()
         }
@@ -53,8 +61,12 @@ struct ContentView: View {
 
 #Preview {
     let settings = PerplexitySettingsStore()
+    let history = ChatHistoryStore()
     return ContentView()
         .environmentObject(AppNavigationState())
         .environmentObject(settings)
-        .environmentObject(ChatViewModel(settings: settings))
+        .environmentObject(ChatViewModel(settings: settings, historyStore: history))
+        .environmentObject(history)
+        .environmentObject(ProfileStore())
+        .environmentObject(PromptStore())
 }
